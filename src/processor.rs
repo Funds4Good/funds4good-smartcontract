@@ -1006,6 +1006,63 @@ impl Processor {
         Ok(())
     }
 
+    fn process_initialize_borrower_storage_account(
+        accounts: &[AccountInfo],
+        program_id: &Pubkey,
+    ) -> ProgramResult {
+        let account_info_iter = &mut accounts.iter();
+        let borrower_main_account = next_account_info(account_info_iter)?;
+        if !borrower_main_account.is_signer {
+            return Err(ProgramError::MissingRequiredSignature);
+        }
+
+        let borrower_storage_account = next_account_info(account_info_iter)?;
+        if borrower_storage_account.owner != program_id {
+            return Err(Funds4GoodError::WrongAccountPassed.into());
+        }
+
+        /*
+        let expected_borrower_storage_account_pubkey = Pubkey::create_with_seed(
+            borrower_main_account.key,
+            "Funds4GoodFinanceBorrower",
+            program_id,
+        )?;
+
+        if expected_borrower_storage_account_pubkey != *borrower_storage_account.key {
+            return Err(Funds4GoodError::AccountMismatched.into());
+        }
+        */
+
+        let rent = Rent::get()?;
+        if !rent.is_exempt(
+            borrower_storage_account.lamports(),
+            borrower_storage_account.data_len(),
+        ) {
+            return Err(Funds4GoodError::NotRentExempt.into());
+        }
+
+        // put a condition if borrower_storage_account.data_len() != 75, then error
+
+        let mut borrower_data =
+            BorrowerAccount::unpack_unchecked(&borrower_storage_account.data.borrow())?;
+
+        if borrower_data.is_initialized() {
+            return Err(Funds4GoodError::BorrowerAccountAlreadyInitialized.into());
+        }
+
+        borrower_data.is_initialized = true;
+        borrower_data.acc_type = AccTypes::BorrowerAcc as u8;
+        borrower_data.borrower_main_acc_pubkey = *borrower_main_account.key;
+        borrower_data.credit_score = 500_000_000_000u64;
+
+        BorrowerAccount::pack(
+            borrower_data,
+            &mut borrower_storage_account.data.borrow_mut(),
+        )?;
+
+        Ok(())
+    }
+
     fn process_initialize_guarantor_storage_account(
         accounts: &[AccountInfo],
         program_id: &Pubkey,
