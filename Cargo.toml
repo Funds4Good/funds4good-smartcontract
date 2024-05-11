@@ -1,11 +1,8 @@
 [package]
-name = "dassi-solana-program"
-version = "0.1.0"
-edition = "2018"
-authors = ["Sachin Nandal <nandalsachin66@gmail.com>", 
-            "Maciej Tabert <maciej@tabert.pl",
-            "Dassi Finance <dassi.social@gmail.com>"]
-license = "WTFPL"
+name = "funds4good-solana"
+version = "0.0.1"
+edition = "2024"
+authors = ["Pranav Bisaria <pranavbisariya29@gmail.com>"]
 repository = ""
 publish = false
 
