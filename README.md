@@ -1,5 +1,4 @@
-# Dassi Prototype Program for Solana India Hackathon Submission
-
+# Funds4Good Prototype Program for Solana India Hackathon Submission
 
 ### Environment Setup
 1. Install Rust from https://rustup.rs/
